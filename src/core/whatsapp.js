@@ -8,7 +8,7 @@ const client = new Client({
     qrMaxRetries: 5,
     puppeteer: {
         headless: true,
-        executablePath: 'C:\\Users\\rifky\\.cache\\puppeteer\\chrome\\win64-145.0.7632.67\\chrome-win64\\chrome.exe',
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         timeout: 0, // No timeout for browser launch
         args: [
             '--no-sandbox',
