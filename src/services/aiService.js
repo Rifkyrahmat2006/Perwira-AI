@@ -56,13 +56,14 @@ async function createGeminiCompletion(prompt, { temperature = 0.4, maxOutputToke
     return text?.trim?.() || '';
 }
 
-async function generateAIResponse(sender, text, historyLogs, specialContact, urgentNote, retrievedContext, dailyAgenda, pendingTasks) {
+async function generateAIResponse(sender, text, historyLogs, specialContact, urgentNote, retrievedContext, dailyAgenda, pendingTasks, chatId) {
     try {
         const { hariTanggal, jamSekarang } = formatDateTime();
         const systemPrompt = getSystemPrompt(
             hariTanggal,
             jamSekarang,
             sender,
+            chatId || 'Unknown',
             historyLogs,
             urgentNote,
             specialContact,
@@ -110,7 +111,7 @@ async function describeImageWithGroq(mediaData, prompt) {
     return extractTextFromCompletion(completion) || '';
 }
 
-async function generateVisionResponse(sender, text, historyLogs, specialContact, urgentNote, retrievedContext, mediaData, dailyAgenda, pendingTasks) {
+async function generateVisionResponse(sender, text, historyLogs, specialContact, urgentNote, retrievedContext, mediaData, dailyAgenda, pendingTasks, chatId) {
     if (!mediaData) {
         return "Tidak ada media yang bisa dianalisis.";
     }
@@ -131,7 +132,8 @@ async function generateVisionResponse(sender, text, historyLogs, specialContact,
             urgentNote,
             retrievedContext,
             dailyAgenda,
-            pendingTasks
+            pendingTasks,
+            chatId
         );
     } catch (error) {
         console.error("Error Vision Groq->Gemma:", error);

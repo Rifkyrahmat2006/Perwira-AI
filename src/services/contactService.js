@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 function loadContacts() {
     const contactsPath = path.resolve(__dirname, '../data/contacts.json');
@@ -111,10 +112,80 @@ function getSpecialContact(senderNumber, senderName) {
     }
 }
 
+const allowedNumbersPath = path.resolve(__dirname, '../data/allowed_numbers.json');
+const allowedGroupsPath = path.resolve(__dirname, '../data/allowed_groups.json');
+
+function saveAllowedNumbers(list) {
+    fs.writeFileSync(allowedNumbersPath, JSON.stringify(list, null, 2));
+}
+
+function saveAllowedGroups(list) {
+    fs.writeFileSync(allowedGroupsPath, JSON.stringify(list, null, 2));
+}
+
+function addAllowedNumber(number, label) {
+    const list = loadAllowedNumbers();
+    const cleanNum = normalizeNumber(number);
+    let entry = list.find(e => normalizeNumber(e.number) === cleanNum);
+    
+    if (entry) {
+        entry.label = label || entry.label;
+        saveAllowedNumbers(list);
+        return `Nomor ${number} diperbarui (Label: ${entry.label}).`;
+    } else {
+        list.push({ number: cleanNum, label: label || 'User' });
+        saveAllowedNumbers(list);
+        return `Nomor ${number} (${label || 'User'}) ditambahkan ke whitelist.`;
+    }
+}
+
+function removeAllowedNumber(number) {
+    let list = loadAllowedNumbers();
+    const cleanNum = normalizeNumber(number);
+    const initialLen = list.length;
+    list = list.filter(e => normalizeNumber(e.number) !== cleanNum);
+    
+    if (list.length === initialLen) return `Nomor ${number} tidak ditemukan di whitelist.`;
+    
+    saveAllowedNumbers(list);
+    return `Nomor ${number} dihapus dari whitelist.`;
+}
+
+function addAllowedGroup(groupId, label) {
+    const list = loadAllowedGroups();
+    // Group ID biasanya panjang
+    let entry = list.find(e => e.groupId === groupId);
+    
+    if (entry) {
+        entry.label = label || entry.label;
+        saveAllowedGroups(list);
+        return `Grup ${groupId} diperbarui (Label: ${entry.label}).`;
+    } else {
+        list.push({ groupId: groupId, label: label || 'Group' });
+        saveAllowedGroups(list);
+        return `Grup ${groupId} (${label || 'Group'}) ditambahkan ke whitelist.`;
+    }
+}
+
+function removeAllowedGroup(groupId) {
+    let list = loadAllowedGroups();
+    const initialLen = list.length;
+    list = list.filter(e => e.groupId !== groupId);
+    
+    if (list.length === initialLen) return `Grup ${groupId} tidak ditemukan di whitelist.`;
+    
+    saveAllowedGroups(list);
+    return `Grup ${groupId} dihapus dari whitelist.`;
+}
+
 module.exports = {
     getSpecialContact,
     isNumberAllowed,
     isGroupAllowed,
     loadContacts,
-    loadSpecialContacts
+    loadSpecialContacts,
+    addAllowedNumber,
+    removeAllowedNumber,
+    addAllowedGroup,
+    removeAllowedGroup
 };

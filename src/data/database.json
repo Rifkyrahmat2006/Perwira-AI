@@ -1,13 +1,165 @@
 {
-  "messages": [],
-  "summaries": [
+  "messages": [
     {
       "chatId": "86681466212353@lid",
-      "contactName": "Rifky D. R. Prakoso",
-      "phones": [],
-      "senderNumber": "6285792593090",
-      "timestamp": 1771277107181,
-      "summary": "Gagal membuat ringkasan."
+      "text": "[Rifky D. R. Prakoso]: [Sistem: User mengirim kontak bernama \"Kailaaaa👩🏻‍⚕️\"]",
+      "timestamp": 1771287988536
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBaik, Rifky sudah menerima kontak dari Kailaaaa👩🏻‍⚕️. Apakah ada instruksi lebih lanjut terkait kontak ini?",
+      "timestamp": 1771288003753
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Masukkan ke whitelist",
+      "timestamp": 1771288018123
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBaik, nomor Kailaaaa👩🏻‍⚕️ sudah ditambahkan ke daftar putih (whitelist).\n\n[Sistem]: Nomor 628... (Kailaaaa👩🏻‍⚕️) ditambahkan ke whitelist.",
+      "timestamp": 1771288033531
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Coba ulangi",
+      "timestamp": 1771288216378
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: [Sistem: User mengirim kontak: \"Kailaaaa👩🏻‍⚕️\" (Nomor: 6285747849023)]",
+      "timestamp": 1771288275879
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Masukkan ke whitelist",
+      "timestamp": 1771288284287
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBaik, nomor Kailaaaa👩🏻‍⚕️ (6285747849023) sudah ditambahkan ke daftar putih (whitelist).\n\n[Sistem]: Nomor 6285747849023 diperbarui (Label: Kailaaaa👩🏻‍⚕️).",
+      "timestamp": 1771288300260
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Besok saya ada kegiatan apa",
+      "timestamp": 1771288369304
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerdasarkan jadwal yang ada, besok tidak ada kegiatan yang terdaftar. Apakah ada yang ingin ditambahkan ke jadwal besok?",
+      "timestamp": 1771288384601
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Catat hari ini saya ada meeting dengan pembina salman jam 9 sampe Dzuhur",
+      "timestamp": 1771288420362
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBaik, Rifky. Saya sudah mencatat meeting dengan pembina Salman hari ini pukul 09:00 hingga waktu Dzuhur.\n\n[Sistem]: Event created: https://www.google.com/calendar/event?eid=dmxscWoybGxvdGxobGZqYzdjOGQxYTVsdmMgcmlma3lkd2lyYWhtYXRwcmFrb3NvQG0",
+      "timestamp": 1771288439828
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: ganti jadi meeting bersama dengan pimpinan serta pembina",
+      "timestamp": 1771288585548
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBaik, Rifky. Saya sudah memperbarui detail meeting menjadi \"Meeting bersama dengan pimpinan serta pembina\" pada pukul 09:00 hingga waktu Dzuhur.\n\n[Sistem]: Event updated: https://www.google.com/calendar/event?eid=dmxscWoybGxvdGxobGZqYzdjOGQxYTVsdmMgcmlma3lkd2lyYWhtYXRwcmFrb3NvQG0",
+      "timestamp": 1771288603191
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: untuk besok apakah saya ada agenda",
+      "timestamp": 1771288648721
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerdasarkan jadwal yang ada, besok tidak ada agenda yang terdaftar untuk Rifky. Apakah ada yang ingin ditambahkan?",
+      "timestamp": 1771288663719
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Besok ada agenda apa saj",
+      "timestamp": 1771288830585
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerdasarkan jadwal yang ada, besok tidak ada agenda yang terdaftar untuk Rifky. Apakah ada yang ingin ditambahkan?\n\n```json\n{}\n```",
+      "timestamp": 1771288847400
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Coba berikan list calender",
+      "timestamp": 1771288866384
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerikut adalah daftar agenda Rifky berdasarkan kalender yang ada:\n\n1. Hari ini, Selasa, 17 Februari 2026, pukul 09:00: Meeting bersama dengan pimpinan serta pembina.\n2. Tidak ada agenda untuk besok, Rabu, 18 Februari 2026.\n\n```json\n{}\n```",
+      "timestamp": 1771288891817
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Besok apakah ada agenda",
+      "timestamp": 1771289096161
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerdasarkan jadwal yang ada, besok tidak ada agenda yang terdaftar untuk Rifky. Apakah ada yang ingin ditambahkan?",
+      "timestamp": 1771289112887
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Besok apakah ada agenda",
+      "timestamp": 1771289256429
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerdasarkan jadwal yang ada, besok tidak ada agenda yang terdaftar untuk Rifky. Apakah ada yang ingin ditambahkan?",
+      "timestamp": 1771289273108
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Besok apa ada agenda?",
+      "timestamp": 1771289754874
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerdasarkan jadwal yang ada, besok tidak ada agenda yang terdaftar untuk Rifky. Apakah ada yang ingin ditambahkan?",
+      "timestamp": 1771289771405
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: List kalender",
+      "timestamp": 1771289786269
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerikut adalah daftar agenda Rifky berdasarkan kalender yang ada:\n\n1. Hari ini, Selasa, 17 Februari 2026, pukul 09:00: Meeting bersama dengan pimpinan serta pembina.\n2. Rabu, 18 Februari 2026, pukul 07:00: Logika Fuzzy - C202.\n3. Jumat, 20 Februari 2026: 1 Ramadan (belum pasti).\n4. Senin, 23 Februari 2026, pukul 08:50: SPK - E206.\n5. Senin, 23 Februari 2026, pukul 10:40: METOPEN - E104.\n6. Senin, 23 Februari 2026, pukul 13:00: PAI - C202.\n7. Selasa, 24 Februari 2026, pukul 08:50: Data Mining - E206.\n8. Selasa, 24 Februari 2026, pukul 13:00: Bindo - C205.",
+      "timestamp": 1771289806314
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Besok apa ada agenda?",
+      "timestamp": 1771289971333
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerdasarkan jadwal yang ada, besok, Rabu, 18 Februari 2026, Rifky memiliki agenda Logika Fuzzy - C202 pukul 07:00. Apakah ada yang ingin ditambahkan?",
+      "timestamp": 1771289989477
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Rifky D. R. Prakoso]: Oke, sepekan lagi?",
+      "timestamp": 1771290016088
+    },
+    {
+      "chatId": "86681466212353@lid",
+      "text": "[Perwira-AI]: *Perwira (AI Assistant by Rifky)*\n\nBerikut adalah agenda Rifky dalam satu minggu ke depan:\n\n1. Rabu, 18 Februari 2026, pukul 07:00: Logika Fuzzy - C202.\n2. Jumat, 20 Februari 2026: 1 Ramadan (belum pasti).\n3. Senin, 23 Februari 2026, pukul 08:50: SPK - E206.\n4. Senin, 23 Februari 2026, pukul 10:40: METOPEN - E104.\n5. Senin, 23 Februari 2026, pukul 13:00: PAI - C202.\n6. Selasa, 24 Februari 2026, pukul 08:50: Data Mining - E206.\n7. Selasa, 24 Februari 2026, pukul 13:00: Bindo - C205.",
+      "timestamp": 1771290035986
     }
-  ]
+  ],
+  "summaries": []
 }

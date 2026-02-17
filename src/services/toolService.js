@@ -3,6 +3,10 @@ const {
     deleteTask, updateTask 
 } = require('./googleService');
 const { saveUrgentNote, deleteUrgentNote } = require('../database/db');
+const { 
+    addAllowedNumber, removeAllowedNumber, 
+    addAllowedGroup, removeAllowedGroup 
+} = require('./contactService');
 
 async function executeToolAction(jsonString, googleAuthClient) {
     try {
@@ -34,6 +38,18 @@ async function executeToolAction(jsonString, googleAuthClient) {
             case 'delete_note':
                 deleteUrgentNote();
                 return "Catatan dihapus.";
+
+            case 'add_allowed_number':
+            case 'edit_allowed_number':
+                return addAllowedNumber(actionData.number, actionData.label);
+            case 'remove_allowed_number':
+                return removeAllowedNumber(actionData.number);
+                
+            case 'add_allowed_group':
+            case 'edit_allowed_group':
+                return addAllowedGroup(actionData.groupId, actionData.label);
+            case 'remove_allowed_group':
+                return removeAllowedGroup(actionData.groupId);
                 
             default:
                 return null;
@@ -90,7 +106,25 @@ async function parseAndExecuteTool(fullResponse, googleAuthClient) {
     const actionResult = await executeToolAction(jsonCandidate, googleAuthClient);
     
     let cleanReply = fullResponse;
+    
+    // Cleanup Logic:
+    // 1. If action executed -> Remove JSON.
+    // 2. If JSON is empty object {} (AI hallucination) -> Remove JSON.
+    
+    let shouldStrip = false;
     if (actionResult) {
+        shouldStrip = true;
+    } else {
+        // Cek jika objek kosong {}
+        try {
+            const obj = JSON.parse(jsonCandidate);
+            if (obj && Object.keys(obj).length === 0) {
+                shouldStrip = true;
+            }
+        } catch(e) {}
+    }
+
+    if (shouldStrip && originalMatch) {
         // Hapus seluruh blok (termasuk ```json ... ```)
         cleanReply = cleanReply.replace(originalMatch, '').trim();
         // Bersihkan sisa code block kosong yang mungkin tertinggal

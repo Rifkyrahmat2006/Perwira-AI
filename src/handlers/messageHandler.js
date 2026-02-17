@@ -191,8 +191,29 @@ async function handleMessage(msg) {
     const promptContact = specialContact?.instruction ? specialContact : null;
     const contactMeta = isGroup ? buildGroupMeta(chat) : buildContactMeta(specialContact, senderName, senderNumber);
 
-    // Commands (owner only — hanya fromMe yang bisa)
-    if (isFromMe) {
+    // --- WHITELIST CHECK ---
+    let isAllowedUser = isFromMe; // Owner always allowed
+    if (!isFromMe) {
+        if (isGroup) {
+            // Check group whitelist
+            if (!isGroupAllowed(chatIdContext)) {
+                console.log(`[Whitelist] Grup ditolak: "${chat.name}" (ID: ${chatIdContext})`);
+                return; // Silently ignore non-whitelisted groups
+            }
+            isAllowedUser = true; // If group is allowed, anyone inside is "allowed" (contextually)
+        } else {
+            // Check number whitelist for private chats
+            if (isNumberAllowed(senderNumber)) {
+                isAllowedUser = true;
+            } else {
+                console.log(`[Whitelist] Nomor ditolak: ${senderNumber}`);
+                return; // Silently ignore non-whitelisted private messages
+            }
+        }
+    }
+
+    // Commands (Owner OR Whitelisted Users)
+    if (isAllowedUser) {
         if (lowerBody === '!aktif') {
             setBotStatus(true);
             await msg.reply('Bot diaktifkan.');
@@ -246,36 +267,26 @@ async function handleMessage(msg) {
 
     if (!getBotStatus()) return;
 
-    // --- DEBUG LOG ---
-    console.log(`[DEBUG] Pesan dari: ${senderNumber} | fromMe: ${isFromMe} | isGroup: ${isGroup} | body: "${messageBody.substring(0, 30)}..."`);
-
-    // --- WHITELIST CHECK ---
-    // Owner (fromMe) always passes.
-    if (!isFromMe) {
-        if (isGroup) {
-            // Check group whitelist
-            if (!isGroupAllowed(chatIdContext)) {
-                console.log(`[Whitelist] Grup ditolak: "${chat.name}" (ID: ${chatIdContext})`);
-                return; // Silently ignore non-whitelisted groups
-            }
-        } else {
-            // Check number whitelist for private chats
-            if (!isNumberAllowed(senderNumber)) {
-                console.log(`[Whitelist] Nomor ditolak: ${senderNumber}`);
-                return; // Silently ignore non-whitelisted private messages
-            }
-            console.log(`[Whitelist] Nomor diterima: ${senderNumber}`);
-        }
-    }
-
     const shouldRespond = isGroup
         ? (botMentioned || isReplyToBot || hasPrefix)
-        : (isFromMe ? hasPrefix : true); // fromMe hanya jika pakai !perwira, orang lain selalu dibalas
-    console.log(`[DEBUG] shouldRespond: ${shouldRespond} | hasPrefix: ${hasPrefix} | botMentioned: ${botMentioned}`);
+        : (isFromMe ? hasPrefix : true); // fromMe hanya jika pakai !perwira (cegah loop), whitelist user selalu dibalas
     if (!shouldRespond) return;
 
     const cleanedText = hasPrefix ? stripPrefix(messageBody) : messageBody;
     let userText = cleanedText || (msg.hasMedia ? '[media]' : '');
+
+    // --- HANDLE CONTACT (VCARD) ---
+    if (msg.type === 'vcard' || msg.type === 'multi_vcard') {
+        const nameMatch = messageBody.match(/FN:(.+)/);
+        const contactName = nameMatch ? nameMatch[1].trim() : 'Seseorang';
+        
+        // Extract number from waid or TEL field
+        const waidMatch = messageBody.match(/waid=(\d+)/);
+        const telMatch = messageBody.match(/TEL.*:([+\d\s-]+)/);
+        const contactNumber = waidMatch ? waidMatch[1] : (telMatch ? telMatch[1].replace(/\D/g, '') : 'Tidak diketahui');
+
+        userText = `[Sistem: User mengirim kontak: "${contactName}" (Nomor: ${contactNumber})]`;
+    }
 
     let downloadedMedia = null;
     if (msg.hasMedia) {
@@ -410,7 +421,8 @@ async function processAIResponse(msgInstance, promptSenderName, textInput, chatI
             retrievedContext,
             mediaData,
             dailyAgenda,
-            pendingTasks
+            pendingTasks,
+            chatIdContext
         );
     } else {
         fullResponse = await generateAIResponse(
@@ -419,9 +431,10 @@ async function processAIResponse(msgInstance, promptSenderName, textInput, chatI
             historyLogs, 
             specialContact, 
             getUrgentNote(), 
-            retrievedContext,
-            dailyAgenda,
-            pendingTasks
+            retrievedContext, 
+            dailyAgenda, 
+            pendingTasks,
+            chatIdContext
         );
     }
 

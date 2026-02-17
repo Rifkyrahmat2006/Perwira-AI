@@ -66,28 +66,62 @@ async function listUpcomingEvents(auth) {
     if (!auth) return "Google Calendar API not authorized.";
     const calendar = google.calendar({ version: 'v3', auth });
     try {
-        const now = new Date();
-        const endOfDay = new Date();
-        endOfDay.setHours(23, 59, 59, 999);
+const now = new Date();
+        const endOfRange = new Date();
+        endOfRange.setDate(endOfRange.getDate() + 7); // Fetch seminggu ke depan
+        endOfRange.setHours(23, 59, 59, 999);
 
-        const res = await calendar.events.list({
-            calendarId: 'primary',
-            timeMin: now.toISOString(),
-            timeMax: endOfDay.toISOString(),
-            maxResults: 10,
-            singleEvents: true,
-            orderBy: 'startTime',
+        // 1. Get List of Calendars
+        const calList = await calendar.calendarList.list();
+        const calendars = calList.data.items || [{ id: 'primary', summary: 'Primary' }];
+
+        // 2. Fetch events from ALL calendars in parallel
+        const allEventsPromises = calendars.map(async (cal) => {
+            try {
+                const res = await calendar.events.list({
+                    calendarId: cal.id,
+                    timeMin: now.toISOString(),
+                    timeMax: endOfRange.toISOString(),
+                    maxResults: 20,
+                    singleEvents: true,
+                    orderBy: 'startTime',
+                });
+                return (res.data.items || []).map(ev => ({ ...ev, calSummary: cal.summary }));
+            } catch (e) {
+                return []; 
+            }
         });
-        const events = res.data.items;
+
+        const results = await Promise.all(allEventsPromises);
+        let events = results.flat();
+
+        // 3. Sort by start time mixed
+        events.sort((a, b) => {
+            const dateA = new Date(a.start.dateTime || a.start.date);
+            const dateB = new Date(b.start.dateTime || b.start.date);
+            return dateA - dateB;
+        });
+
+        // Limit total results
+        events = events.slice(0, 15);
+
         if (!events || events.length === 0) {
-            return 'No upcoming events today.';
+            return 'No upcoming events found for the next 7 days.';
         }
+
         return events.map((event, i) => {
             const start = event.start.dateTime || event.start.date;
-            // Format simple time
+            const dateObj = new Date(start);
+            // Format: [Rabu, 18 Februari 2026 09:00]
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const dateStr = dateObj.toLocaleDateString('id-ID', options);
             const timeStr = start.includes('T') ? start.split('T')[1].substring(0, 5) : 'All Day';
-            return `${i + 1}. [${timeStr}] ${event.summary} (ID: ${event.id})`;
+            
+            // Show calendar name if not primary
+            const calTag = (event.calSummary && !event.calSummary.includes('@') && event.calSummary !== 'Primary') ? `[${event.calSummary}] ` : '';
+            return `${i + 1}. ${calTag}[${dateStr} ${timeStr}] ${event.summary} (ID: ${event.id})`;
         }).join('\n');
+
     } catch (err) {
         console.error('The API returned an error: ' + err);
         return "Error fetching calendar.";
@@ -101,15 +135,28 @@ async function getRawUpcomingEvents(auth, timeWindowMinutes = 15) {
         const now = new Date();
         const future = new Date(now.getTime() + timeWindowMinutes * 60000);
 
-        const res = await calendar.events.list({
-            calendarId: 'primary',
-            timeMin: now.toISOString(),
-            timeMax: future.toISOString(),
-            maxResults: 10,
-            singleEvents: true,
-            orderBy: 'startTime',
+        // 1. Get List of Calendars
+        const calList = await calendar.calendarList.list();
+        const calendars = calList.data.items || [{ id: 'primary' }];
+
+        // 2. Fetch all
+        const allEventsPromises = calendars.map(async (cal) => {
+            try {
+                const res = await calendar.events.list({
+                    calendarId: cal.id,
+                    timeMin: now.toISOString(),
+                    timeMax: future.toISOString(),
+                    maxResults: 10, // per calendar
+                    singleEvents: true,
+                    orderBy: 'startTime',
+                });
+                return res.data.items || [];
+            } catch (e) { return []; }
         });
-        return res.data.items || [];
+
+        const results = await Promise.all(allEventsPromises);
+        return results.flat();
+
     } catch (err) {
         console.error('Error fetching raw events:', err);
         return [];
