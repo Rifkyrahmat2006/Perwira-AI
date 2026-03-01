@@ -1,11 +1,12 @@
 const { authorize, getRawUpcomingEvents } = require('./googleService');
+const { getReminders, markReminderSent } = require('../database/db');
 require('dotenv').config();
 
 const REMINDER_INTERVAL_MS = 60 * 1000; // Cek setiap 1 menit
 const REMINDER_WINDOW_MINUTES = 15; // Ingatkan 15 menit sebelum acara
 const remindedEventIds = new Set(); // Cache ID event yang sudah diingatkan
 
-async function checkAndSendReminders(client) {
+async function checkAndSendCalendarReminders(client) {
     try {
         const auth = await authorize();
         if (!auth) {
@@ -48,23 +49,61 @@ async function checkAndSendReminders(client) {
                 console.error(`[Reminder] Gagal mengirim pesan ke ${targetId}:`, error);
             }
         }
-
-        // Opsional: Bersihkan cache ID yang acaranya sudah lewat (biar memori nggak bocor)
-        // Tapi untuk MVP, Set string ID tidak akan memakan banyak memori kecuali ada ribuan event.
         
     } catch (error) {
-        console.error('[Reminder] Error checking reminders:', error);
+        console.error('[Reminder] Error checking calendar reminders:', error);
+    }
+}
+
+async function checkAndSendCustomReminders(client) {
+    try {
+        const reminders = getReminders();
+        if (!reminders || reminders.length === 0) return;
+
+        const now = new Date();
+
+        for (const reminder of reminders) {
+            if (reminder.sent) continue;
+
+            const reminderTime = new Date(reminder.dateTime);
+            
+            // Kirim jika waktu reminder sudah lewat atau dalam 1 menit ke depan
+            if (reminderTime <= new Date(now.getTime() + 60 * 1000)) {
+                const targetLabels = (reminder.targetLabels || []).join(', ') || 'Penerima';
+                const message = `🔔 *PENGINGAT KUSTOM*\n\n${reminder.message}\n\n_Dijadwalkan untuk: ${reminderTime.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}_`;
+
+                let allSent = true;
+                for (const target of reminder.targets) {
+                    try {
+                        await client.sendMessage(target, message);
+                        console.log(`[CustomReminder] Terkirim ke ${target}: "${reminder.message.substring(0, 40)}..."`);
+                    } catch (error) {
+                        console.error(`[CustomReminder] Gagal mengirim ke ${target}:`, error);
+                        allSent = false;
+                    }
+                }
+
+                if (allSent) {
+                    markReminderSent(reminder.id);
+                    console.log(`[CustomReminder] Reminder ${reminder.id} ditandai selesai.`);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('[CustomReminder] Error checking custom reminders:', error);
     }
 }
 
 function startReminderCron(client) {
     console.log('[Reminder] Service dimulai. Cek setiap 1 menit.');
     // Cek langsung saat start
-    checkAndSendReminders(client);
+    checkAndSendCalendarReminders(client);
+    checkAndSendCustomReminders(client);
     
     // Lalu loop
     setInterval(() => {
-        checkAndSendReminders(client);
+        checkAndSendCalendarReminders(client);
+        checkAndSendCustomReminders(client);
     }, REMINDER_INTERVAL_MS);
 }
 

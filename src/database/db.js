@@ -3,6 +3,7 @@ const path = require('path');
 
 const DB_FILE = path.resolve(__dirname, '../data/database.json');
 const NOTE_FILE = path.resolve(__dirname, '../data/urgent_note.txt');
+const REMINDERS_FILE = path.resolve(__dirname, '../data/reminders.json');
 
 let messageBuffer = [];
 let conversationSummaries = [];
@@ -93,6 +94,66 @@ function getConversationSummaries() {
     return conversationSummaries;
 }
 
+// === CUSTOM REMINDERS ===
+
+function loadReminders() {
+    try {
+        if (fs.existsSync(REMINDERS_FILE)) {
+            const raw = fs.readFileSync(REMINDERS_FILE, 'utf8');
+            return JSON.parse(raw);
+        }
+    } catch (err) {
+        console.error('Gagal memuat reminders:', err);
+    }
+    return [];
+}
+
+function saveReminders(list) {
+    try {
+        fs.writeFileSync(REMINDERS_FILE, JSON.stringify(list, null, 2));
+    } catch (err) {
+        console.error('Gagal menyimpan reminders:', err);
+    }
+}
+
+function addReminder(reminder) {
+    const list = loadReminders();
+    const newReminder = {
+        id: `rem_${Date.now()}`,
+        message: reminder.message,
+        dateTime: reminder.dateTime,
+        targets: reminder.targets || [],
+        targetLabels: reminder.targetLabels || [],
+        sent: false,
+        createdAt: Date.now()
+    };
+    list.push(newReminder);
+    saveReminders(list);
+    return newReminder;
+}
+
+function deleteReminder(id) {
+    const list = loadReminders();
+    const initialLen = list.length;
+    const filtered = list.filter(r => r.id !== id);
+    if (filtered.length === initialLen) return null;
+    saveReminders(filtered);
+    return id;
+}
+
+function getReminders() {
+    return loadReminders();
+}
+
+function markReminderSent(id) {
+    const list = loadReminders();
+    const reminder = list.find(r => r.id === id);
+    if (reminder) {
+        reminder.sent = true;
+        saveReminders(list);
+    }
+}
+
 module.exports = {
     saveDatabase,
     saveUrgentNote,
@@ -104,5 +165,9 @@ module.exports = {
     getMessagesByChat,
     clearMessagesByChat,
     addConversationSummary,
-    getConversationSummaries
+    getConversationSummaries,
+    addReminder,
+    deleteReminder,
+    getReminders,
+    markReminderSent
 };

@@ -2,7 +2,7 @@ const {
     createEvent, createTask, deleteEvent, updateEvent, 
     deleteTask, updateTask 
 } = require('./googleService');
-const { saveUrgentNote, deleteUrgentNote } = require('../database/db');
+const { saveUrgentNote, deleteUrgentNote, addReminder, deleteReminder, getReminders } = require('../database/db');
 const { 
     addAllowedNumber, removeAllowedNumber, 
     addAllowedGroup, removeAllowedGroup 
@@ -50,6 +50,29 @@ async function executeToolAction(jsonString, googleAuthClient) {
                 return addAllowedGroup(actionData.groupId, actionData.label);
             case 'remove_allowed_group':
                 return removeAllowedGroup(actionData.groupId);
+
+            case 'create_reminder': {
+                const rem = addReminder({
+                    message: actionData.message,
+                    dateTime: actionData.dateTime,
+                    targets: actionData.targets || [],
+                    targetLabels: actionData.targetLabels || []
+                });
+                const targetInfo = rem.targetLabels.length ? rem.targetLabels.join(', ') : rem.targets.join(', ');
+                return `Reminder dibuat (ID: ${rem.id}). Pesan: "${rem.message}" | Waktu: ${rem.dateTime} | Tujuan: ${targetInfo}`;
+            }
+            case 'delete_reminder': {
+                const deleted = deleteReminder(actionData.reminderId);
+                return deleted ? `Reminder ${deleted} dihapus.` : `Reminder tidak ditemukan.`;
+            }
+            case 'list_reminders': {
+                const reminders = getReminders().filter(r => !r.sent);
+                if (reminders.length === 0) return 'Tidak ada reminder aktif.';
+                return reminders.map((r, i) => {
+                    const targets = r.targetLabels.length ? r.targetLabels.join(', ') : r.targets.join(', ');
+                    return `${i + 1}. [${r.id}] "${r.message}" → ${r.dateTime} → Tujuan: ${targets}`;
+                }).join('\n');
+            }
                 
             default:
                 return null;

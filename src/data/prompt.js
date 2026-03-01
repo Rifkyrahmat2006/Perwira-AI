@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const RULES_FILE = path.resolve(__dirname, './rules.txt');
+const { getReminders } = require('../database/db');
 
 function loadBaseRules() {
     try {
@@ -77,6 +78,16 @@ ${dailyAgenda}
 [DAFTAR TUGAS (GOOGLE TASKS)]
 ${pendingTasks}
 
+[REMINDER AKTIF]
+${(() => {
+    const reminders = getReminders().filter(r => !r.sent);
+    if (reminders.length === 0) return 'Tidak ada reminder aktif.';
+    return reminders.map((r, i) => {
+        const targets = r.targetLabels.length ? r.targetLabels.join(', ') : r.targets.join(', ');
+        return `${i + 1}. [${r.id}] "${r.message}" → ${r.dateTime} → Tujuan: ${targets}`;
+    }).join('\n');
+})()}
+
 [RIWAYAT CHAT]
 --- MULAI ---
 ${historyLogs}
@@ -108,6 +119,17 @@ TUGAS UTAMA:
    {"action": "remove_allowed_number", "number": "628..."}
    {"action": "add_allowed_group", "groupId": "ID_GROUP (bisa pakai ID Chat Saat Ini)", "label": "Nama Group"}
    {"action": "remove_allowed_group", "groupId": "ID_GROUP"}
+
+   {"action": "create_reminder", "message": "Isi pengingat", "dateTime": "YYYY-MM-DDTHH:mm:ss", "targets": ["628...@c.us", "ID_GROUP@g.us"], "targetLabels": ["Nama Kontak", "Nama Grup"]}
+   {"action": "delete_reminder", "reminderId": "rem_xxx"}
+   {"action": "list_reminders"}
+
+   CATATAN REMINDER:
+   - Untuk target personal, gunakan format nomor@c.us (misal "6281234567890@c.us")
+   - Untuk target grup, gunakan ID grup yang berakhiran @g.us
+   - Jika user bilang "kirim ke sini" atau "ingatkan di chat ini", gunakan ID Chat Saat Ini sebagai target
+   - targetLabels berisi nama-nama penerima untuk referensi (misal ["Rifky", "Grup Kelas"])
+   - Jika user tidak menyebutkan target, defaultkan ke ID Chat Saat Ini
 5. PERHATIKAN TANGGAL DENGAN TELITI:
    Format Jadwal: "[Nama Kalender] [Hari, Tanggal Bulan Tahun Jam] Judul Event"
    - Cocokkan "Besok", "Lusa", atau tanggal spesifik dengan data di "[JADWAL SEPEKAN KE DEPAN]".
